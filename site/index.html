@@ -100,6 +100,21 @@
         line-height: 1.65;
       }
 
+      .studio-link {
+        display: block;
+        margin-bottom: 30px;
+        padding: 18px 20px;
+        border: 1px solid #55403f;
+        border-radius: 14px;
+        background: linear-gradient(110deg, rgb(255 85 77 / 12%), #1b1a1e 70%);
+        text-decoration: none;
+      }
+
+      .studio-link strong, .studio-link span { display: block; }
+      .studio-link strong { margin-bottom: 5px; font-size: 15px; }
+      .studio-link span { color: var(--muted); font-size: 13px; line-height: 1.5; }
+      .studio-link:hover strong { color: #ff837c; }
+
       form {
         display: flex;
         gap: 10px;
@@ -253,6 +268,11 @@
         <p class="eyebrow">Miniatury YouTube</p>
         <h1>Zobacz miniaturę.<br>Wybierz rozmiar.</h1>
         <p class="intro">Wklej link do filmu lub jego identyfikator, aby szybko podejrzeć miniaturę w dostępnych jakościach.</p>
+
+        <a class="studio-link" href="./studio.html">
+          <strong>Tworzysz coś nowego? Otwórz studio koncepcji →</strong>
+          <span>Opisz grę, motyw i kierunek — przygotujemy prompt do generatora obrazów.</span>
+        </a>
 
         <form id="thumbnail-form">
           <label for="video-input" class="visually-hidden">Link do filmu lub identyfikator YouTube</label>

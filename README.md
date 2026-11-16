@@ -1,10 +1,13 @@
 # YT Thumbnails
 
-Prosta, statyczna strona do podglądu miniaturek filmów YouTube. Wklej link do filmu albo jego 11-znakowy identyfikator, wybierz rozmiar i otwórz miniaturę.
+Statyczna strona do podglądu miniaturek filmów YouTube oraz przygotowywania promptów do nowych koncepcji miniaturek.
+
+- `site/index.html` — podgląd istniejącej miniatury na podstawie linku lub identyfikatora filmu.
+- `site/studio.html` — kreator promptu na podstawie gry, motywu i kierunku wizualnego.
 
 ## Uruchomienie lokalne
 
-Otwórz `site/index.html` w przeglądarce. Projekt nie wymaga instalowania zależności ani kompilacji.
+Otwórz `site/index.html` w przeglądarce. Studio jest dostępne pod `site/studio.html`. Projekt nie wymaga instalowania zależności ani kompilacji.
 
 ## GitHub Pages
 
