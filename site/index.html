@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111114">
+    <meta name="description" content="Szybki podgląd miniaturek filmów YouTube w różnych rozmiarach.">
+    <title>YT Thumbnails — podgląd miniaturek</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #111114;
+        color: #f5f4f2;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --muted: #a4a1a0;
+        --line: #343337;
+        --accent: #ff554d;
+      }
+
+      * { box-sizing: border-box; }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(ellipse at 50% -20%, rgb(255 85 77 / 12%), transparent 55%),
+          #111114;
+      }
+
+      a { color: inherit; }
+
+      .shell {
+        width: min(100% - 40px, 920px);
+        margin-inline: auto;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-block: 27px;
+        border-bottom: 1px solid var(--line);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -.02em;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 34px;
+        height: 24px;
+        place-items: center;
+        border-radius: 7px;
+        background: var(--accent);
+        color: white;
+        font-size: 13px;
+      }
+
+      main {
+        width: min(100%, 700px);
+        margin: 0 auto;
+        padding-block: clamp(54px, 10vw, 100px) 72px;
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(38px, 8vw, 62px);
+        letter-spacing: -.065em;
+        line-height: 1.03;
+      }
+
+      .intro {
+        max-width: 510px;
+        margin: 20px 0 34px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.65;
+      }
+
+      form {
+        display: flex;
+        gap: 10px;
+        padding: 8px;
+        border: 1px solid #444247;
+        border-radius: 14px;
+        background: #1b1a1e;
+        box-shadow: 0 18px 55px rgb(0 0 0 / 22%);
+      }
+
+      input {
+        width: 100%;
+        min-width: 0;
+        padding: 12px;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+      }
+
+      input::placeholder { color: #817e82; }
+
+      button, select {
+        min-height: 46px;
+        border: 0;
+        border-radius: 9px;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      button {
+        flex: 0 0 auto;
+        padding: 0 18px;
+        background: var(--accent);
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover { background: #ff6a63; }
+      button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 3px;
+      }
+
+      .hint, .status {
+        min-height: 22px;
+        margin: 10px 4px 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .status:empty { display: none; }
+      .status[data-error="true"] { color: #ff837c; }
+
+      .preview {
+        display: none;
+        margin-top: 32px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: #1b1a1e;
+      }
+
+      .preview[data-visible="true"] { display: block; }
+
+      .preview-image-wrap {
+        display: grid;
+        min-height: 180px;
+        place-items: center;
+        background:
+          linear-gradient(45deg, #242328 25%, transparent 25%),
+          linear-gradient(-45deg, #242328 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #242328 75%),
+          linear-gradient(-45deg, transparent 75%, #242328 75%);
+        background-color: #1b1a1e;
+        background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        background-size: 16px 16px;
+      }
+
+      .preview img {
+        display: block;
+        width: 100%;
+        max-height: 440px;
+        object-fit: contain;
+      }
+
+      .preview img[hidden] { display: none; }
+
+      .preview-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      .preview-label {
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 13px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      select {
+        padding: 0 32px 0 12px;
+        border: 1px solid var(--line);
+        background: #242328;
+        color: inherit;
+        cursor: pointer;
+      }
+
+      .open-link {
+        color: white;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration-color: var(--accent);
+        text-underline-offset: 4px;
+        white-space: nowrap;
+      }
+
+      footer {
+        padding-block: 22px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+      }
+
+      @media (max-width: 560px) {
+        .shell { width: min(100% - 28px, 920px); }
+        form { flex-wrap: wrap; }
+        input { flex-basis: 100%; }
+        button { width: 100%; }
+        .preview-bar { flex-wrap: wrap; }
+        .preview-label { flex-basis: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <span class="brand-mark" aria-hidden="true">▶</span>
+        <span>YT Thumbnails</span>
+      </header>
+
+      <main>
+        <p class="eyebrow">Miniatury YouTube</p>
+        <h1>Zobacz miniaturę.<br>Wybierz rozmiar.</h1>
+        <p class="intro">Wklej link do filmu lub jego identyfikator, aby szybko podejrzeć miniaturę w dostępnych jakościach.</p>
+
+        <form id="thumbnail-form">
+          <label for="video-input" class="visually-hidden">Link do filmu lub identyfikator YouTube</label>
+          <input id="video-input" name="video" type="text" placeholder="Wklej link lub identyfikator filmu" autocomplete="url" required>
+          <button type="submit">Pokaż miniaturę</button>
+        </form>
+        <p class="hint">Obsługiwane linki: youtube.com, youtu.be oraz youtube-nocookie.com.</p>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+
+        <section class="preview" id="preview" aria-label="Podgląd miniatury" data-visible="false">
+          <div class="preview-image-wrap">
+            <img id="thumbnail" alt="Miniatura filmu YouTube" hidden>
+          </div>
+          <div class="preview-bar">
+            <span class="preview-label" id="video-id"></span>
+            <label>
+              <span class="visually-hidden">Rozmiar miniatury</span>
+              <select id="quality" aria-label="Rozmiar miniatury">
+                <option value="maxresdefault">Maksymalny · 1280 × 720</option>
+                <option value="sddefault">Duży · 640 × 480</option>
+                <option value="hqdefault">Wysoki · 480 × 360</option>
+                <option value="mqdefault">Średni · 320 × 180</option>
+                <option value="default">Mały · 120 × 90</option>
+              </select>
+            </label>
+            <a class="open-link" id="open-image" href="#" target="_blank" rel="noopener noreferrer">Otwórz obraz ↗</a>
+          </div>
+        </section>
+      </main>
+
+      <footer>Miniatury są udostępniane przez serwery YouTube.</footer>
+    </div>
+
+    <script>
+      const form = document.querySelector("#thumbnail-form");
+      const input = document.querySelector("#video-input");
+      const preview = document.querySelector("#preview");
+      const image = document.querySelector("#thumbnail");
+      const quality = document.querySelector("#quality");
+      const status = document.querySelector("#status");
+      const videoIdLabel = document.querySelector("#video-id");
+      const openImage = document.querySelector("#open-image");
+      let videoId = "";
+
+      function getVideoId(value) {
+        const trimmed = value.trim();
+        if (/^[\w-]{11}$/.test(trimmed)) return trimmed;
+
+        let url;
+        try {
+          url = new URL(trimmed);
+        } catch {
+          throw new Error("Wpisz poprawny link YouTube lub 11-znakowy identyfikator filmu.");
+        }
+
+        const host = url.hostname.toLowerCase().replace(/^www\./, "");
+        if (!["youtube.com", "m.youtube.com", "youtu.be", "youtube-nocookie.com"].includes(host)) {
+          throw new Error("Podaj link z YouTube albo youtu.be.");
+        }
+
+        let id = "";
+        if (host === "youtu.be") {
+          id = url.pathname.split("/").filter(Boolean)[0] || "";
+        } else if (url.pathname === "/watch") {
+          id = url.searchParams.get("v") || "";
+        } else {
+          id = url.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]{11})(?:\/|$)/)?.[1] || "";
+        }
+
+        if (!/^[\w-]{11}$/.test(id)) {
+          throw new Error("Nie udało się znaleźć identyfikatora filmu w tym linku.");
+        }
+        return id;
+      }
+
+      function updateImage() {
+        const url = `https://img.youtube.com/vi/${videoId}/${quality.value}.jpg`;
+        image.hidden = true;
+        status.textContent = "Ładowanie miniatury…";
+        status.dataset.error = "false";
+        image.onload = () => {
+          image.hidden = false;
+          status.textContent = "";
+        };
+        image.onerror = () => {
+          image.hidden = true;
+          status.textContent = "Nie udało się załadować miniatury w tym rozmiarze.";
+          status.dataset.error = "true";
+        };
+        image.src = url;
+        openImage.href = url;
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        try {
+          videoId = getVideoId(input.value);
+          videoIdLabel.textContent = `ID filmu: ${videoId}`;
+          preview.dataset.visible = "true";
+          status.textContent = "";
+          updateImage();
+        } catch (error) {
+          preview.dataset.visible = "false";
+          status.textContent = error.message;
+          status.dataset.error = "true";
+        }
+      });
+
+      quality.addEventListener("change", () => {
+        if (videoId) updateImage();
+      });
+    </script>
+  </body>
+</html>
